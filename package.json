@@ -3,10 +3,14 @@
     "start": "parcel src/index.html"
   },
   "devDependencies": {
+    "@types/react": "^16.7.18",
+    "@types/react-dom": "^16.0.11",
     "parcel-bundler": "^1.11.0",
     "typescript": "^3.2.2"
   },
   "dependencies": {
+    "@emotion/core": "^10.0.6",
+    "@emotion/styled": "^10.0.6",
     "lottie-web": "^5.4.3",
     "react": "^16.8.0-alpha.0",
     "react-dom": "^16.8.0-alpha.0"

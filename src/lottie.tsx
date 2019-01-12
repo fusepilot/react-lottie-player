@@ -3,6 +3,8 @@ import { useState, useCallback, useRef, useEffect, useReducer } from "react";
 import lottie from "lottie-web";
 import * as checked from "./checked.json";
 
+import styled from "@emotion/styled";
+
 export interface LottieOptions {
   /**
    * Defines if the animation should play only once or repeatedly in an endless loop
@@ -321,6 +323,12 @@ export const useLottie = (
   };
 };
 
+const Container = styled.div`
+  width: 500px;
+  height: 500px;
+  background: rgba(255, 255, 255, 0.1);
+`;
+
 export const LottieReact = (
   props: LottieProps,
   containerProps: React.HTMLAttributes<HTMLDivElement>
@@ -334,7 +342,7 @@ export const LottieReact = (
 
   return (
     <>
-      <div ref={containerRef} {...containerProps} />
+      <Container ref={containerRef} {...containerProps} />
       <button onClick={lottie.play}>Play</button>
       <button onClick={lottie.pause}>Pause</button>
       <button onClick={lottie.stop}>Stop</button>
