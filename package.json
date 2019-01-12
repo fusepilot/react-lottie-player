@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "start": "parcel src/index.html"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.11.0",
+    "typescript": "^3.2.2"
+  },
+  "dependencies": {
+    "lottie-web": "^5.4.3",
+    "react": "^16.8.0-alpha.0",
+    "react-dom": "^16.8.0-alpha.0"
+  }
+}
