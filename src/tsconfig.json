@@ -4,6 +4,5 @@
     "module": "commonjs",
     "jsx": "react",
     "lib": ["dom", "esnext"]
-  },
-  "exclude": ["./node_modules/*"]
+  }
 }

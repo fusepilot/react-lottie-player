@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useState, useCallback, useRef, useEffect, useReducer } from "react";
+import * as PropTypes from "prop-types";
 import lottie from "lottie-web";
 import * as checked from "./checked.json";
 
@@ -98,7 +99,7 @@ const initialState = {
   currentFrame: 0,
   currentTime: 0,
   totalFrames: 0,
-  direction: 0,
+  direction: 1,
   playSpeed: 1,
   currentLoop: 0,
   isPlaying: false,
@@ -130,105 +131,192 @@ function reducer(
   }
 }
 
+function usePrevious<T>(value: T): T {
+  const ref = useRef(null);
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
+
+// export const useLottie = (
+//   containerRef: React.MutableRefObject<HTMLDivElement>,
+//   options?: LottieOptions
+// ) => {
+//   options = { ...{ subframe: true }, ...options };
+//   const [animation, setAnimation] = useState<lottie.AnimationItem>(null);
+//   const [animationData, setAnimationData] = useState(options.animationData);
+//   const [eventListenerHandlers, setEventListenerHandlers] = useState([]);
+//   const previousAnimationData = usePrevious(animationData);
+
+//   const [state, dispatch] = useReducer(reducer, initialState);
+
+//   const enterFrameHandler = useCallback(event => {
+//     const currentFrame = Math.floor(animation.currentFrame);
+//     const direction = animation.playDirection;
+//     const currentTime = event.currentTime / animation.frameRate;
+
+//     dispatch({
+//       type: "update",
+//       state: { currentTime, direction, currentFrame }
+//     });
+//   }, []);
+
+//
+
+//   useEffect(
+//     () => {
+//       if (animationData != previousAnimationData && containerRef) {
+//         // unregisterEvents();
+
+//         const animationOptions: lottie.AnimationConfig = {
+//           container: containerRef.current,
+//           renderer: "svg",
+//           loop: options.loop,
+//           autoplay: options.autoplay,
+//           animationData: animationData
+//         };
+//         const animation2 = lottie.loadAnimation(animationOptions);
+//         setAnimation(animation2);
+
+//         // registerEvents();
+
+//         animation2.setSubframe(options.subframe);
+
+//         const duration = animation2.getDuration();
+//         const totalFrames = animation2.totalFrames;
+//         const playSpeed = animation2.playSpeed;
+
+//         // dispatch({
+//         //   type: "update",
+//         //   state: { duration, totalFrames, playSpeed }
+//         // });
+//       }
+
+//       return () => {
+//         // unregisterEvents();
+//         // animation.onEnterFrame = undefined;
+//         console.log("return");
+//         // animation.stop();
+//         animation.onEnterFrame = undefined;
+//         animation.onLoopComplete = undefined;
+//         animation.onComplete = undefined;
+//         animation.destroy();
+//         dispatch({ type: "reset" });
+//       };
+//     },
+//     [animationData]
+//   );
+
+// };
+
+const Container = styled.div`
+  width: 500px;
+  height: 500px;
+  background: rgba(255, 255, 255, 0.04);
+`;
+
 export const useLottie = (
   containerRef: React.MutableRefObject<HTMLDivElement>,
   options?: LottieOptions
 ) => {
   options = { ...{ subframe: true }, ...options };
-  const animation = useRef<lottie.AnimationItem>(null);
-  const [animationData, setAnimationData] = useState(options.animationData);
-  const [eventListenerHandles, setEventListenerHandles] = useState([]);
 
+  const animation = useRef<lottie.AnimationItem>(null);
+  // const [animation, setAnimation] = useState<lottie.AnimationItem>(null);
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  const onEnterFrame = useCallback(event => {
+    const currentFrame = Math.floor(animation.current.currentFrame);
+    const direction = animation.current.playDirection;
+    const currentTime = event.currentTime / animation.current.frameRate;
+    setTimeout(() => {
+      dispatch({
+        type: "update",
+        state: { currentTime, direction, currentFrame }
+      });
+    }, 0);
+  }, []);
+
+  const onLoopCompleteHandler = useCallback(({ currentLoop, direction }) => {
+    dispatch({
+      type: "update",
+      state: { currentLoop, direction }
+    });
+  }, []);
+
+  const onCompleteHandler = useCallback(({ direction }) => {
+    const duration = animation.current.getDuration();
+    dispatch({
+      type: "update",
+      state: { direction, currentTime: duration, isPlaying: false }
+    });
+  }, []);
+
+  const onSegmentStart = useCallback(({ direction }) => {
+    const duration = animation.current.getDuration();
+    dispatch({
+      type: "update",
+      state: { direction, currentTime: duration }
+    });
+  }, []);
 
   useEffect(
     () => {
-      if (animationData && containerRef) {
-        if (animation.current) {
-          dispatch({ type: "reset" });
-          eventListenerHandles.forEach(eventListenerHandle => {
-            eventListenerHandle();
-          });
-          setEventListenerHandles([]);
-          animation.current.destroy();
-        }
+      const animationOptions = {
+        container: containerRef.current,
+        renderer: "svg",
+        loop: options.loop,
+        autoplay: options.autoplay,
+        animationData: options.animationData
+        // segments: segments !== false,
+      };
 
-        const animationOptions: lottie.AnimationConfig = {
-          container: containerRef.current,
-          renderer: "svg",
-          loop: options.loop,
-          autoplay: options.autoplay,
-          animationData: animationData
-        };
-        animation.current = lottie.loadAnimation(animationOptions);
-
-        animation.current.setSubframe(options.subframe);
-
-        const duration = animation.current.getDuration();
-        const totalFrames = animation.current.totalFrames;
-        const playSpeed = animation.current.playSpeed;
-
-        dispatch({
-          type: "update",
-          state: { duration, totalFrames, playSpeed }
-        });
-
-        const enterFrameHandle = animation.current.addEventListener(
-          "enterFrame",
-          event => {
-            const currentFrame = Math.floor(animation.current.currentFrame);
-            const direction = animation.current.playDirection;
-
-            const currentTime = event.currentTime / animation.current.frameRate;
-
-            dispatch({
-              type: "update",
-              state: { currentTime, direction, currentFrame }
-            });
-          }
-        );
-
-        const completeHandle = animation.current.addEventListener(
-          "complete",
-          ({ direction }) => {
-            const duration = animation.current.getDuration();
-            dispatch({
-              type: "update",
-              state: { direction, currentTime: duration }
-            });
-          }
-        );
-
-        const onLoopCompleteHandle = animation.current.addEventListener(
-          "loopComplete",
-          ({ currentLoop, direction }) => {
-            dispatch({
-              type: "update",
-              state: { currentLoop, direction }
-            });
-          }
-        );
-
-        setEventListenerHandles([
-          enterFrameHandle,
-          completeHandle,
-          onLoopCompleteHandle
-        ]);
+      if (animation.current) {
+        animation.current.removeEventListener("enterFrame", onEnterFrame);
+        animation.current.removeEventListener("loopComplete", onEnterFrame);
+        animation.current.removeEventListener("complete", onCompleteHandler);
+        animation.current.removeEventListener("segmentStart", onSegmentStart);
+        animation.current.destroy();
+        animation.current = null;
+        dispatch({ type: "reset" });
       }
 
-      return () => {
-        animation.current.destroy();
+      animation.current = lottie.loadAnimation(animationOptions);
 
-        eventListenerHandles.forEach(eventListenerHandle =>
-          eventListenerHandle()
-        );
-        setEventListenerHandles([]);
+      animation.current.addEventListener("enterFrame", onEnterFrame);
+      animation.current.addEventListener("loopComplete", onLoopCompleteHandler);
+      animation.current.addEventListener("complete", onCompleteHandler);
+      animation.current.addEventListener("segmentStart", onCompleteHandler);
+
+      animation.current.setSubframe(options.subframe);
+
+      const duration = animation.current.getDuration();
+      const totalFrames = animation.current.totalFrames;
+      const playSpeed = animation.current.playSpeed;
+
+      dispatch({
+        type: "update",
+        state: { duration, totalFrames, playSpeed }
+      });
+
+      return () => {
+        if (animation.current) {
+          animation.current.removeEventListener("enterFrame", onEnterFrame);
+          animation.current.removeEventListener(
+            "loopComplete",
+            onLoopCompleteHandler
+          );
+          animation.current.removeEventListener("complete", onCompleteHandler);
+          animation.current.removeEventListener("segmentStart", onSegmentStart);
+          animation.current.destroy();
+          animation.current = null;
+          dispatch({ type: "reset" });
+        }
       };
     },
-    [animationData]
+    [options.animationData]
   );
-
-  window.addEventListener;
 
   const play = useCallback(
     () => {
@@ -318,16 +406,9 @@ export const useLottie = (
     setTime,
     setSpeed,
     setDirection,
-    setAnimationData,
     ...state
   };
 };
-
-const Container = styled.div`
-  width: 500px;
-  height: 500px;
-  background: rgba(255, 255, 255, 0.1);
-`;
 
 export const LottieReact = (
   props: LottieProps,
@@ -335,9 +416,7 @@ export const LottieReact = (
 ) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const lottie = useLottie(containerRef, {
-    animationData: props.options.animationData,
-    autoplay: false,
-    loop: true
+    animationData: props.options.animationData
   });
 
   return (
@@ -350,10 +429,14 @@ export const LottieReact = (
         Random Frame
       </button>
       <button onClick={() => lottie.setSpeed(0.1)}>Slow down</button>
-      <button onClick={() => lottie.setDirection(-1)}>Reverse</button>
-      <button onClick={() => lottie.setAnimationData(checked)}>
-        Change Animation Data
+      <button
+        onClick={() => lottie.setDirection(lottie.direction == 1 ? -1 : 1)}
+      >
+        Reverse
       </button>
+      {/* <button onClick={() => lottie.setAnimationData(checked)}>
+      Change Animation Data
+    </button> */}
       <pre>{JSON.stringify(lottie, undefined, 2)}</pre>
     </>
   );
