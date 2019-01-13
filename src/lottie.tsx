@@ -274,7 +274,10 @@ export const useLottie = (
 
       if (animation.current) {
         animation.current.removeEventListener("enterFrame", onEnterFrame);
-        animation.current.removeEventListener("loopComplete", onEnterFrame);
+        animation.current.removeEventListener(
+          "loopComplete",
+          onLoopCompleteHandler
+        );
         animation.current.removeEventListener("complete", onCompleteHandler);
         animation.current.removeEventListener("segmentStart", onSegmentStart);
         animation.current.destroy();

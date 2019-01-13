@@ -1,6 +1,44 @@
 declare namespace Lottie {
   // export type AnimationEventType = 'complete' | 'loopComplete' | 'enterFrame' | 'segmentStart' | 'config_ready' | 'data_ready' | 'data_failed' | 'loaded_images' | 'DOMLoaded' | 'destroy'
 
+  type EnterFrameEvent = {
+    type: "enterFrame";
+    currentTime: number;
+    totalTime: number;
+    direction: number;
+  };
+
+  type LoopCompleteEvent = {
+    type: "loopComplete";
+    currentLoop: number;
+    totalLoops: boolean; // boolean ? i think this should probably be called frameMult instead
+    direction: number;
+  };
+
+  type CompleteEvent = {
+    type: "complete";
+    direction: number;
+  };
+
+  type SegmentStartEvent = {
+    type: "segmentStart";
+    firstFrame: number;
+    totalFrames: number;
+  };
+
+  type DestroyEvent = {
+    type: "destroy";
+    target: AnimationItem;
+  };
+
+  interface LottieEventMap {
+    enterFrame: EnterFrameEvent;
+    loopComplete: EnterFrameEvent;
+    complete: CompleteEvent;
+    segmentStart: SegmentStartEvent;
+    destroy: DestroyEvent;
+  }
+
   export interface AnimationItem {
     play();
 
@@ -61,59 +99,16 @@ declare namespace Lottie {
     totalFrames: number;
     wrapper: HTMLElement | undefined;
 
-    addEventListener(
-      event: "enterFrame",
-      callback: (
-        args: {
-          type: "enterFrame";
-          currentTime: number;
-          totalTime: number;
-          direction: number;
-        }
-      ) => void
+    // window.addEventListener
+
+    addEventListener<K extends keyof LottieEventMap>(
+      type: K,
+      listener: (event: K, data: LottieEventMap[K]) => any
     ): void;
 
-    addEventListener(
-      event: "loopComplete",
-      callback: (
-        args: {
-          type: "loopComplete";
-          currentLoop: number;
-          totalLoops: boolean; // boolean ? i think this should probably be called frameMult instead
-          direction: number;
-        }
-      ) => void
-    ): void;
-
-    addEventListener(
-      event: "complete",
-      callback: (
-        args: {
-          type: "complete";
-          direction: number;
-        }
-      ) => void
-    ): void;
-
-    addEventListener(
-      event: "segmentStart",
-      callback: (
-        args: {
-          type: "segmentStart";
-          firstFrame: number;
-          totalFrames: number;
-        }
-      ) => void
-    ): void;
-
-    addEventListener(
-      event: "destroy",
-      callback: (
-        args: {
-          type: "destroy";
-          target: AnimationItem;
-        }
-      ) => void
+    removeEventListener<K extends keyof LottieEventMap>(
+      type: K,
+      listener: (event: K, data: LottieEventMap[K]) => any
     ): void;
   }
 
