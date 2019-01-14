@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import { LottieReact } from "./lottie";
+import { Lottie, LottieTest } from "./lottie";
 // import LottieReact from "react-lottie";
 import { Global, css } from "@emotion/core";
 import * as bodymovin from "./bodymovin-example.json";
@@ -21,7 +21,8 @@ const App = () => {
   return (
     <>
       <Global styles={globalStyles} />
-      <LottieReact
+      <LottieTest />
+      {/* <LottieReact
         options={{
           animationData: animation,
           rendererSettings: {
@@ -34,7 +35,7 @@ const App = () => {
             callback: () => console.log("enterFrame:")
           }
         ]}
-      />
+      /> */}
       <button
         onClick={() =>
           setAnimation(animation == bodymovin ? checked : bodymovin)
