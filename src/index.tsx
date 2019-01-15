@@ -1,10 +1,11 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import { Lottie, LottieTest } from "./lottie";
-// import LottieReact from "react-lottie";
+import { Lottie } from "./lottie";
 import { Global, css } from "@emotion/core";
+//@ts-ignore
 import * as bodymovin from "./bodymovin-example.json";
+//@ts-ignore
 import * as checked from "./checked.json";
 import { useState } from "react";
 
@@ -17,25 +18,17 @@ const globalStyles = css`
 
 const App = () => {
   const [animation, setAnimation] = useState(checked);
+  const [loop, setLoop] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   return (
     <>
       <Global styles={globalStyles} />
-      <LottieTest />
-      {/* <LottieReact
-        options={{
-          animationData: animation,
-          rendererSettings: {
-            preserveAspectRatio: "xMidYMid slice"
-          }
-        }}
-        eventListeners={[
-          {
-            eventName: "enterFrame",
-            callback: () => console.log("enterFrame:")
-          }
-        ]}
-      /> */}
+      <Lottie
+        options={{ animationData: animation }}
+        loop={loop}
+        isPlaying={isPlaying}
+      />
       <button
         onClick={() =>
           setAnimation(animation == bodymovin ? checked : bodymovin)
@@ -43,6 +36,8 @@ const App = () => {
       >
         Toggle Animation
       </button>
+      <button onClick={() => setLoop(!loop)}>Toggle Loop</button>
+      <button onClick={() => setIsPlaying(true)}>Play</button>
     </>
   );
 };

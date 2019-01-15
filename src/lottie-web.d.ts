@@ -84,9 +84,9 @@ declare namespace Lottie {
     frameModifier: number | undefined;
     frameMult: number | undefined;
     frameRate: number | undefined;
-    isLoaded: true;
-    isPaused: true;
-    loop: true;
+    isLoaded: boolean;
+    isPaused: boolean;
+    loop: boolean;
     name: string;
     path: string;
     playCount: number;

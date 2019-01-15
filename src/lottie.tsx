@@ -74,6 +74,9 @@ export interface LottieProps {
   speed?: number;
   direction?: number;
 
+  loop?: boolean;
+  autoplay?: boolean;
+
   containerProps?: React.HTMLAttributes<HTMLDivElement>;
 
   currentFrame?: number;
@@ -231,6 +234,20 @@ export const useLottie = (
     [options.animationData]
   );
 
+  useEffect(
+    () => {
+      animation.current.loop = options.loop;
+    },
+    [options.loop]
+  );
+
+  useEffect(
+    () => {
+      animation.current.autoplay = options.autoplay;
+    },
+    [options.autoplay]
+  );
+
   const play = useCallback(
     () => {
       if (animation.current) {
@@ -328,14 +345,15 @@ export const useLottie = (
 
 export const Lottie = (props: LottieProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const lottie = useLottie(containerRef, props.options);
+  const lottie = useLottie(containerRef, {
+    ...props.options,
+    ...{ loop: props.loop, autoplay: props.autoplay }
+  });
 
   useEffect(
     () => {
       if (props.currentFrame) lottie.setFrame(props.currentFrame);
       else {
-        console.log(props.isPaused);
-
         if (props.isPaused) lottie.pause();
         else {
           props.isPlaying ? lottie.play() : lottie.stop();

@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "parcel src/index.html",
-    "build": "tsc"
+    "build": "tsc --project src/tsconfig.json"
   },
   "devDependencies": {
     "@types/react": "^16.7.18",
