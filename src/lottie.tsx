@@ -2,7 +2,6 @@ import * as React from "react";
 import { useState, useCallback, useRef, useEffect, useReducer } from "react";
 import * as PropTypes from "prop-types";
 import lottie from "lottie-web";
-import * as checked from "./checked.json";
 
 import styled from "@emotion/styled";
 
@@ -349,56 +348,56 @@ export const Lottie = (props: LottieProps) => {
   return <Container ref={containerRef} {...props.containerProps} />;
 };
 
-export const LottieTest = () => {
-  const [frame, setFrame] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isPaused, setIsPaused] = useState(false);
+// export const LottieTest = () => {
+//   const [frame, setFrame] = useState(0);
+//   const [isPlaying, setIsPlaying] = useState(true);
+//   const [isPaused, setIsPaused] = useState(false);
 
-  useEffect(() => {
-    setInterval(() => {
-      setFrame(Math.floor(Math.random() * 15));
-    }, 20);
-  }, []);
+//   useEffect(() => {
+//     setInterval(() => {
+//       setFrame(Math.floor(Math.random() * 15));
+//     }, 20);
+//   }, []);
 
-  return (
-    <>
-      <Lottie
-        options={{ animationData: checked, autoplay: false }}
-        containerProps={{ "aria-label": "hey", title: "hey", role: "hey" }}
-        // currentFrame={frame}
-        isPlaying={isPlaying}
-        isPaused={isPaused}
-      />
-      <button
-        onClick={() => {
-          setIsPlaying(isPlaying ? false : true);
-        }}
-      >
-        Toggle Playing
-      </button>
-      <button
-        onClick={() => {
-          setIsPaused(isPaused ? false : true);
-        }}
-      >
-        Toggle Paused
-      </button>
-      {/* <button onClick={lottie.play}>Play</button>
-      <button onClick={lottie.pause}>Pause</button>
-      <button onClick={lottie.stop}>Stop</button>
-      <button onClick={() => lottie.setTime(Math.random() * lottie.duration)}>
-        Random Frame
-      </button>
-      <button onClick={() => lottie.setSpeed(0.1)}>Slow down</button>
-      <button
-        onClick={() => lottie.setDirection(lottie.direction == 1 ? -1 : 1)}
-      >
-        Reverse
-      </button> */}
-      {/* <button onClick={() => lottie.setAnimationData(checked)}>
-      Change Animation Data
-    </button> */}
-      {/* <pre>{JSON.stringify(lottie, undefined, 2)}</pre> */}
-    </>
-  );
-};
+//   return (
+//     <>
+//       <Lottie
+//         options={{ animationData: checked, autoplay: false }}
+//         containerProps={{ "aria-label": "hey", title: "hey", role: "hey" }}
+//         // currentFrame={frame}
+//         isPlaying={isPlaying}
+//         isPaused={isPaused}
+//       />
+//       <button
+//         onClick={() => {
+//           setIsPlaying(isPlaying ? false : true);
+//         }}
+//       >
+//         Toggle Playing
+//       </button>
+//       <button
+//         onClick={() => {
+//           setIsPaused(isPaused ? false : true);
+//         }}
+//       >
+//         Toggle Paused
+//       </button>
+//       {/* <button onClick={lottie.play}>Play</button>
+//       <button onClick={lottie.pause}>Pause</button>
+//       <button onClick={lottie.stop}>Stop</button>
+//       <button onClick={() => lottie.setTime(Math.random() * lottie.duration)}>
+//         Random Frame
+//       </button>
+//       <button onClick={() => lottie.setSpeed(0.1)}>Slow down</button>
+//       <button
+//         onClick={() => lottie.setDirection(lottie.direction == 1 ? -1 : 1)}
+//       >
+//         Reverse
+//       </button> */}
+//       {/* <button onClick={() => lottie.setAnimationData(checked)}>
+//       Change Animation Data
+//     </button> */}
+//       {/* <pre>{JSON.stringify(lottie, undefined, 2)}</pre> */}
+//     </>
+//   );
+// };
