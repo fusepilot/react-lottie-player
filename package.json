@@ -2,10 +2,12 @@
   "name": "react-lottie",
   "version": "1.0.0",
   "main": "build/lottie.js",
+  "types": "build/lottie.d.ts",
   "repository": "git@github.com:fusepilot/react-lottie.git",
   "author": "Michael Delaney <michael@fusepilot.com>",
   "license": "MIT",
   "scripts": {
+    "clean": "rm -rf .cache build dist node_modules",
     "start": "parcel src/index.html",
     "build": "tsc --project src/tsconfig.json",
     "watch": "tsc --project src/tsconfig.json --watch"
@@ -19,9 +21,7 @@
   "dependencies": {
     "@emotion/core": "^10.0.6",
     "@emotion/styled": "^10.0.6",
-    "lottie-web": "^5.4.4",
-    "react": "^16.0.0",
-    "react-dom": "^16.8.3"
+    "lottie-web": "^5.4.4"
   },
   "peerDependencies": {
     "react": "^16.8.3",
