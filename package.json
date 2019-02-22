@@ -10,7 +10,8 @@
     "clean": "rm -rf .cache build dist node_modules",
     "start": "parcel src/index.html",
     "build": "tsc --project src/tsconfig.json",
-    "watch": "tsc --project src/tsconfig.json --watch"
+    "watch": "tsc --project src/tsconfig.json --watch",
+    "prepublish": "tsc --project src/tsconfig.json"
   },
   "devDependencies": {
     "@types/react": "^16.7.18",
