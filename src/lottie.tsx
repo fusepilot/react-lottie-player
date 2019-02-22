@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState, useCallback, useRef, useEffect, useReducer } from "react";
 import * as PropTypes from "prop-types";
-import lottie from "lottie-web";
+import * as lottie from "lottie-web";
 
 import styled from "@emotion/styled";
 
@@ -171,20 +171,51 @@ export const useLottie = (
     });
   }, []);
 
-  useEffect(
-    () => {
-      const animationOptions = Object.assign(
-        {
-          loop: true,
-          autoplay: true,
-          renderer: "svg"
-        },
-        options,
-        {
-          container: containerRef.current
-        }
-      );
+  useEffect(() => {
+    const animationOptions = Object.assign(
+      {
+        loop: true,
+        autoplay: true,
+        renderer: "svg"
+      },
+      options,
+      {
+        container: containerRef.current
+      }
+    );
 
+    if (animation.current) {
+      animation.current.removeEventListener("enterFrame", onEnterFrame);
+      animation.current.removeEventListener(
+        "loopComplete",
+        onLoopCompleteHandler
+      );
+      animation.current.removeEventListener("complete", onCompleteHandler);
+      animation.current.removeEventListener("segmentStart", onSegmentStart);
+      animation.current.destroy();
+      animation.current = null;
+      dispatch({ type: "reset" });
+    }
+
+    animation.current = lottie.loadAnimation(animationOptions);
+
+    animation.current.addEventListener("enterFrame", onEnterFrame);
+    animation.current.addEventListener("loopComplete", onLoopCompleteHandler);
+    animation.current.addEventListener("complete", onCompleteHandler);
+    animation.current.addEventListener("segmentStart", onCompleteHandler);
+
+    animation.current.setSubframe(options.subframe);
+
+    const duration = animation.current.getDuration();
+    const totalFrames = animation.current.totalFrames;
+    const playSpeed = animation.current.playSpeed;
+
+    dispatch({
+      type: "update",
+      state: { duration, totalFrames, playSpeed }
+    });
+
+    return () => {
       if (animation.current) {
         animation.current.removeEventListener("enterFrame", onEnterFrame);
         animation.current.removeEventListener(
@@ -197,95 +228,46 @@ export const useLottie = (
         animation.current = null;
         dispatch({ type: "reset" });
       }
+    };
+  }, [options.animationData]);
 
-      animation.current = lottie.loadAnimation(animationOptions);
+  useEffect(() => {
+    animation.current.loop = options.loop;
+  }, [options.loop]);
 
-      animation.current.addEventListener("enterFrame", onEnterFrame);
-      animation.current.addEventListener("loopComplete", onLoopCompleteHandler);
-      animation.current.addEventListener("complete", onCompleteHandler);
-      animation.current.addEventListener("segmentStart", onCompleteHandler);
+  useEffect(() => {
+    animation.current.autoplay = options.autoplay;
+  }, [options.autoplay]);
 
-      animation.current.setSubframe(options.subframe);
-
-      const duration = animation.current.getDuration();
-      const totalFrames = animation.current.totalFrames;
-      const playSpeed = animation.current.playSpeed;
-
+  const play = useCallback(() => {
+    if (animation.current) {
+      animation.current.play();
       dispatch({
         type: "update",
-        state: { duration, totalFrames, playSpeed }
+        state: { isPlaying: true, isStopped: false, isPaused: false }
       });
+    }
+  }, [animation.current]);
 
-      return () => {
-        if (animation.current) {
-          animation.current.removeEventListener("enterFrame", onEnterFrame);
-          animation.current.removeEventListener(
-            "loopComplete",
-            onLoopCompleteHandler
-          );
-          animation.current.removeEventListener("complete", onCompleteHandler);
-          animation.current.removeEventListener("segmentStart", onSegmentStart);
-          animation.current.destroy();
-          animation.current = null;
-          dispatch({ type: "reset" });
-        }
-      };
-    },
-    [options.animationData]
-  );
+  const stop = useCallback(() => {
+    if (animation.current) {
+      animation.current.stop();
+      dispatch({
+        type: "update",
+        state: { isPlaying: false, isStopped: true, isPaused: false }
+      });
+    }
+  }, [animation.current]);
 
-  useEffect(
-    () => {
-      animation.current.loop = options.loop;
-    },
-    [options.loop]
-  );
-
-  useEffect(
-    () => {
-      animation.current.autoplay = options.autoplay;
-    },
-    [options.autoplay]
-  );
-
-  const play = useCallback(
-    () => {
-      if (animation.current) {
-        animation.current.play();
-        dispatch({
-          type: "update",
-          state: { isPlaying: true, isStopped: false, isPaused: false }
-        });
-      }
-    },
-    [animation.current]
-  );
-
-  const stop = useCallback(
-    () => {
-      if (animation.current) {
-        animation.current.stop();
-        dispatch({
-          type: "update",
-          state: { isPlaying: false, isStopped: true, isPaused: false }
-        });
-      }
-    },
-    [animation.current]
-  );
-
-  const pause = useCallback(
-    () => {
-      if (animation.current) {
-        animation.current.pause();
-        dispatch({
-          type: "update",
-          state: { isPlaying: false, isStopped: false, isPaused: true }
-        });
-      }
-    },
-    [animation.current]
-  );
+  const pause = useCallback(() => {
+    if (animation.current) {
+      animation.current.pause();
+      dispatch({
+        type: "update",
+        state: { isPlaying: false, isStopped: false, isPaused: true }
+      });
+    }
+  }, [animation.current]);
 
   const setFrame = useCallback(
     (frame: number) => {
@@ -350,18 +332,15 @@ export const Lottie = (props: LottieProps) => {
     ...{ loop: props.loop, autoplay: props.autoplay }
   });
 
-  useEffect(
-    () => {
-      if (props.currentFrame) lottie.setFrame(props.currentFrame);
+  useEffect(() => {
+    if (props.currentFrame) lottie.setFrame(props.currentFrame);
+    else {
+      if (props.isPaused) lottie.pause();
       else {
-        if (props.isPaused) lottie.pause();
-        else {
-          props.isPlaying ? lottie.play() : lottie.stop();
-        }
+        props.isPlaying ? lottie.play() : lottie.stop();
       }
-    },
-    [props.currentFrame, props.isPlaying, props.isPaused]
-  );
+    }
+  }, [props.currentFrame, props.isPlaying, props.isPaused]);
 
   return <Container ref={containerRef} {...props.containerProps} />;
 };

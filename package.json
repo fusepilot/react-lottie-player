@@ -7,7 +7,8 @@
   "license": "MIT",
   "scripts": {
     "start": "parcel src/index.html",
-    "build": "tsc --project src/tsconfig.json"
+    "build": "tsc --project src/tsconfig.json",
+    "watch": "tsc --project src/tsconfig.json --watch"
   },
   "devDependencies": {
     "@types/react": "^16.7.18",
@@ -18,8 +19,12 @@
   "dependencies": {
     "@emotion/core": "^10.0.6",
     "@emotion/styled": "^10.0.6",
-    "react": "^16.8.0-alpha.0",
-    "react-dom": "^16.8.0-alpha.0",
-    "lottie-web": "^5.4.3"
+    "lottie-web": "^5.4.4",
+    "react": "^16.0.0",
+    "react-dom": "^16.8.3"
+  },
+  "peerDependencies": {
+    "react": "^16.8.3",
+    "react-dom": "^16.8.3"
   }
 }

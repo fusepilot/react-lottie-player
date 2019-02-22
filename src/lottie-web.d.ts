@@ -175,5 +175,5 @@ declare class LottyPlayer {
 declare const Lottie: LottyPlayer;
 
 declare module "lottie-web" {
-  export default Lottie;
+  export = Lottie;
 }
