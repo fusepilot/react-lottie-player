@@ -135,12 +135,13 @@ export const useLottie = (
 
   const animation = useRef<lottie.AnimationItem>(null);
   const [state, dispatch] = useReducer(reducer, initialState);
+  const timeout = useRef(null);
 
   const onEnterFrame = useCallback(event => {
     const currentFrame = Math.floor(animation.current.currentFrame);
     const direction = animation.current.playDirection;
     const currentTime = event.currentTime / animation.current.frameRate;
-    setTimeout(() => {
+    timeout.current = setTimeout(() => {
       dispatch({
         type: "update",
         state: { currentTime, direction, currentFrame }
@@ -217,6 +218,7 @@ export const useLottie = (
 
     return () => {
       if (animation.current) {
+        if (timeout.current) clearTimeout(timeout.current);
         animation.current.removeEventListener("enterFrame", onEnterFrame);
         animation.current.removeEventListener(
           "loopComplete",
