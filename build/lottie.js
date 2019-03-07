@@ -36,17 +36,14 @@ exports.useLottie = (containerRef, options) => {
     options = { ...{ subframe: true }, ...options };
     const animation = react_1.useRef(null);
     const [state, dispatch] = react_1.useReducer(reducer, initialState);
-    const timeout = react_1.useRef(null);
     const onEnterFrame = react_1.useCallback(event => {
         const currentFrame = Math.floor(animation.current.currentFrame);
         const direction = animation.current.playDirection;
         const currentTime = event.currentTime / animation.current.frameRate;
-        timeout.current = setTimeout(() => {
-            dispatch({
-                type: "update",
-                state: { currentTime, direction, currentFrame }
-            });
-        }, 0);
+        dispatch({
+            type: "update",
+            state: { currentTime, direction, currentFrame }
+        });
     }, []);
     const onLoopCompleteHandler = react_1.useCallback(({ currentLoop, direction }) => {
         dispatch({
@@ -100,8 +97,6 @@ exports.useLottie = (containerRef, options) => {
         });
         return () => {
             if (animation.current) {
-                if (timeout.current)
-                    clearTimeout(timeout.current);
                 animation.current.removeEventListener("enterFrame", onEnterFrame);
                 animation.current.removeEventListener("loopComplete", onLoopCompleteHandler);
                 animation.current.removeEventListener("complete", onCompleteHandler);
